@@ -6,14 +6,17 @@ Created on Sat Dec 15 20:19:47 2018
 """
 from PIL import Image
 
-'''main recursive function for mergesort
+'''
+this is the main recursive function for mergesort
+
 inputs: ar - PIL pixelMap to be edited
 start - start row or column
 end - end row or column
 hold - row or column that we are sorting along
 isCol - boolean saying whether you are sorting along a row or not
 
-outputs: none'''
+outputs: none
+'''
 def mergeSort(ar, start, end, hold, isCol=True):
     if(start >= end):
         return
@@ -21,10 +24,13 @@ def mergeSort(ar, start, end, hold, isCol=True):
     mergeSort(ar, start, middle, hold, isCol)
     mergeSort(ar, middle+1, end, hold, isCol)
     merge(ar, start, middle, end, hold, isCol)
-    
-#merges two sections of ar based on which elements are smaller, helper 
-#function for mergesort
+
+'''
+this merges two sections of ar based on which elements are smaller, helper
+function for mergesort
+'''
 def merge(ar, start, middle, end, holdi, isCol=True):
+    
     try:
         if(start > middle or start > end):
             return
@@ -32,6 +38,7 @@ def merge(ar, start, middle, end, holdi, isCol=True):
         idx2 = middle+1
         hidx = 0
         holder = [(0,0,0) for i in range(end-start+1)]
+
         while(idx1 <= middle and idx2 <=end):
             if(isCol):
                 if(ar[idx1, holdi]<=ar[idx2, holdi]):
@@ -48,8 +55,8 @@ def merge(ar, start, middle, end, holdi, isCol=True):
                 else:
                     holder[hidx] = ar[holdi, idx2]
                     idx2+=1
-                hidx+=1 
-                
+                hidx+=1
+
         if(idx1 <= middle):
             if(isCol):
                 while(idx1<=middle):
@@ -61,7 +68,7 @@ def merge(ar, start, middle, end, holdi, isCol=True):
                     holder[hidx] = ar[holdi, idx1]
                     idx1+=1
                     hidx+=1
-                    
+
         if(idx2 <= end):
             if(isCol):
                 while(idx2<=end):
@@ -73,7 +80,7 @@ def merge(ar, start, middle, end, holdi, isCol=True):
                     holder[hidx] = ar[holdi, idx2]
                     idx2 +=1
                     hidx+=1
-                    
+
         for i in range(len(holder)):
             if(isCol):
                 ar[start+i, holdi] = holder[i]
@@ -82,7 +89,7 @@ def merge(ar, start, middle, end, holdi, isCol=True):
     except:
         print(f"hold: {holdi}, idx1: {idx1}, idx2: {idx2}, end:{end}, middle: {middle}, start:{start}")
         raise IndexError
-            
+
 #sort the columns in pixelMap image from start to end
 def sortColumns(image, start, end):
     for i in range(end-start+1):
@@ -93,7 +100,9 @@ def sortRows(image, start, end):
     for i in range(end-start+1):
         mergeSort(image, 0, image.width, i, isCol=False)
 
-'''sort pixels in a rectangle
+'''
+sort pixels in a rectangle in place, so there is no return value
+
 inputs:
     image: PIL pixelmap to be edited
     row1: row number of top left pixel
@@ -102,6 +111,7 @@ inputs:
     col2: column number of bottom right pixel
     which: either 'rows' or 'cols' indicates whether the user wants to sort
     the rectangle along rows or columns
+
 outputs:
     none
 '''
@@ -109,20 +119,22 @@ def sortRect(image, row1, row2, col1, col2, which='rows'):
     if(which == 'cols'):
         for i in range(col1, col2):
             mergeSort(image, row1, row2, i, isCol=False)
+
     elif(which=='rows'):
         for i in range(row1, row2):
             mergeSort(image, col1, col2, i, isCol=True)
+
     else:
-        raise ValueError("""'which' parameter of 
+        raise ValueError("""'which' parameter of
 pixelSort.sortRect must 'rows' or 'cols'""")
-        
-        
-if(__name__=="__main__"):  
+
+
+if(__name__=="__main__"):
     try:
         #open image
         im = Image.open('jellyfish.jpg')
         pixelMap = im.load()
-        
+
         #do some manipulations
         sortRect(pixelMap, 80, 209, 952, 1537, which='cols')
         sortRect(pixelMap, 209, 338, 876, 1614, which='cols')
@@ -131,7 +143,7 @@ if(__name__=="__main__"):
         sortRect(pixelMap, 596, 725, 880, 1580, which='cols')
         sortRect(pixelMap, 596, im.height-1, 1580, 1630, which='rows')
         sortRect(pixelMap, 0, im.height-1, 0, 500, which='cols')
-        
+
         #save
         im.show()
         im.save('jellyfishout.jpg')
